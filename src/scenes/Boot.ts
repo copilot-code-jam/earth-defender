@@ -10,7 +10,7 @@ export class Boot extends Scene
     preload ()
     {
         // Load the space background image
-        this.load.image('space-background', 'assets/preview.png');
+        this.load.image('space-background', 'assets/earth.png');
     }
 
     create ()
