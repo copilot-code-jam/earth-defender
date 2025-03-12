@@ -17,9 +17,10 @@ export class Game extends Scene {
   asteroid: Phaser.GameObjects.Sprite;
 
   preload() {
-    this.load.image("asteroid", "assets/asteroid.png");
+    this.load.image("asteroid2", "assets/asteroid2.png");
     this.load.image("spaceship", "assets/body_01.png");
     this.load.image("ball", "assets/plasma_ball.png"); // Load the ball image
+    this.load.image("asteroid_exploded", "assets/asteroid_exploded.png"); // Load the explosion image
   }
 
   create() {
@@ -55,8 +56,8 @@ export class Game extends Scene {
       this.sys.game.config.width as number
     );
     const asteroidY = 50;
-    this.asteroid = this.add.sprite(asteroidX, asteroidY, "asteroid");
-    this.asteroid.setScale(5); // Adjust the size of the asteroid
+    this.asteroid = this.add.sprite(asteroidX, asteroidY, "asteroid2");
+    this.asteroid.setDisplaySize(100, 100); // Ensure the size of the asteroid is 100px
 
     this.ball = this.add.sprite(
       this.spaceship.x,
@@ -123,9 +124,9 @@ export class Game extends Scene {
       const explosion = this.add.sprite(
         this.asteroid.x,
         this.asteroid.y,
-        "explosion"
+        "asteroid_exploded"
       );
-      explosion.play("explode"); // Assuming you have an animation called "explode"
+      explosion.setDisplaySize(100, 100); // Ensure the size of the explosion is 100px
 
       // Remove the asteroid
       this.asteroid.destroy();
