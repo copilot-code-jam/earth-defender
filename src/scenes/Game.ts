@@ -18,7 +18,7 @@ export class Game extends Scene {
 
   preload() {
     this.load.image("asteroid", "assets/asteroid.png");
-    this.load.image("spaceship", "assets/spaceship.png");
+    this.load.image("spaceship", "assets/body_01.png");
     this.load.image("ball", "assets/ball.png"); // Load the ball image
   }
 
@@ -47,7 +47,7 @@ export class Game extends Scene {
     this.background.setAlpha(0.5);
 
     this.spaceship = this.add.sprite(400, 600, "spaceship"); // Adjusted y-coordinate to 600
-    this.spaceship.setScale(4, 1); // Increase the width of the spaceship
+    // this.spaceship.setScale(4, 1); // Increase the width of the spaceship
     this.cursors = this.input.keyboard.createCursorKeys();
 
     const asteroidX = Phaser.Math.Between(
