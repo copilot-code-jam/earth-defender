@@ -17,7 +17,7 @@ export class MainMenu extends Scene
         this.background.displayWidth = this.sys.game.config.width as number;
         this.background.displayHeight = this.sys.game.config.height as number;
 
-        this.logo = this.add.image(512, 300, 'logo');
+        this.logo = this.add.image(512, 300, 'logo').setScale(0.5);
 
         this.title = this.add.text(512, 460, 'Main Menu', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
