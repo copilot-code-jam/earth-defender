@@ -13,7 +13,9 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(512, 384, 'background');
+        this.background = this.add.image(0, 0, 'space-background').setOrigin(0, 0);
+        this.background.displayWidth = this.sys.game.config.width as number;
+        this.background.displayHeight = this.sys.game.config.height as number;
 
         this.logo = this.add.image(512, 300, 'logo');
 
