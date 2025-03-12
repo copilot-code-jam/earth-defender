@@ -5,6 +5,8 @@ export class Game extends Scene {
   camera: Phaser.Cameras.Scene2D.Camera;
   background: Phaser.GameObjects.Image;
   msg_text: Phaser.GameObjects.Text;
+  ball: Phaser.GameObjects.Sprite;
+  ballVelocity: Phaser.Math.Vector2;
 
   constructor() {
     super("Game");
@@ -15,6 +17,7 @@ export class Game extends Scene {
 
   preload() {
     this.load.image("spaceship", "assets/spaceship.png");
+    this.load.image("ball", "assets/ball.png"); // Load the ball image
   }
 
   create() {
@@ -30,15 +33,9 @@ export class Game extends Scene {
     this.spaceship.setScale(4, 1); // Increase the width of the spaceship
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.msg_text = this.add.text(512, 384, "Make something fun!", {
-      fontFamily: "Arial Black",
-      fontSize: 38,
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 8,
-      align: "center",
-    });
-    this.msg_text.setOrigin(0.5);
+    this.ball = this.add.sprite(this.spaceship.x, this.spaceship.y - 50, "ball"); // Add ball on top of spaceship
+    this.ball.setScale(0.5); // Adjust the size of the ball
+    this.ballVelocity = new Phaser.Math.Vector2(0, -200); // Initialize ball velocity to move up
 
     this.input.once("pointerdown", () => {
       this.scene.start("GameOver");
@@ -50,6 +47,40 @@ export class Game extends Scene {
       this.spaceship.x -= 5;
     } else if (this.cursors.right.isDown) {
       this.spaceship.x += 5;
+    }
+
+    // Prevent the spaceship from leaving the window
+    if (this.spaceship.x < 0) {
+      this.spaceship.x = 0;
+    } else if (this.spaceship.x > this.sys.game.config.width as number) {
+      this.spaceship.x = this.sys.game.config.width as number;
+    }
+
+    // Move the ball in a straight line upwards when space is pressed
+    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
+      const angle = Phaser.Math.Between(-45, 45); // Randomize horizontal direction
+      this.ballVelocity.setToPolar(Phaser.Math.DegToRad(angle - 90), 200); // Set velocity with random horizontal direction but upwards
+    }
+
+    this.ball.x += this.ballVelocity.x * this.game.loop.delta / 1000;
+    this.ball.y += this.ballVelocity.y * this.game.loop.delta / 1000;
+
+    // Bounce the ball against the window frame
+    if (this.ball.x < 0 || this.ball.x > this.sys.game.config.width as number) {
+      this.ballVelocity.x *= -1;
+    }
+    if (this.ball.y < 0) {
+      this.ballVelocity.y *= -1;
+    }
+
+    // Bounce the ball against the spaceship
+    if (this.ball.y > this.spaceship.y - 50 && this.ball.y < this.spaceship.y && this.ball.x > this.spaceship.x - this.spaceship.displayWidth / 2 && this.ball.x < this.spaceship.x + this.spaceship.displayWidth / 2) {
+      this.ballVelocity.y *= -1;
+    }
+
+    // End the game if the ball touches the bottom of the window
+    if (this.ball.y > this.sys.game.config.height as number) {
+      this.scene.start("GameOver");
     }
   }
 }
