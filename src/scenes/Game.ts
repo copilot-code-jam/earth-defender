@@ -7,6 +7,8 @@ export class Game extends Scene {
   msg_text: Phaser.GameObjects.Text;
   ball: Phaser.GameObjects.Sprite;
   ballVelocity: Phaser.Math.Vector2;
+  asteroidDestroyed: boolean = false;
+  successText: Phaser.GameObjects.Text;
 
   constructor() {
     super("Game");
@@ -70,9 +72,31 @@ export class Game extends Scene {
     this.input.once("pointerdown", () => {
       this.scene.start("GameOver");
     });
+
+    // Create success text but keep it hidden initially
+    this.successText = this.add.text(
+      this.sys.game.config.width as number / 2, 
+      this.sys.game.config.height as number / 2, 
+      'Success!\nAsteroid Destroyed!', 
+      {
+        fontFamily: 'Arial',
+        fontSize: '48px',
+        color: '#00ff00',
+        align: 'center',
+        stroke: '#000000',
+        strokeThickness: 6
+      }
+    );
+    this.successText.setOrigin(0.5);
+    this.successText.visible = false;
   }
 
   update() {
+    // If the asteroid is destroyed, don't process other updates
+    if (this.asteroidDestroyed) {
+      return;
+    }
+
     if (this.cursors.left.isDown) {
       this.spaceship.x -= 5;
     } else if (this.cursors.right.isDown) {
@@ -115,6 +139,7 @@ export class Game extends Scene {
 
     // Check for collision between ball and asteroid
     if (
+      this.asteroid && // Check if asteroid exists
       this.ball.x > this.asteroid.x - this.asteroid.displayWidth / 2 &&
       this.ball.x < this.asteroid.x + this.asteroid.displayWidth / 2 &&
       this.ball.y > this.asteroid.y - this.asteroid.displayHeight / 2 &&
@@ -131,6 +156,9 @@ export class Game extends Scene {
       // Remove the asteroid
       this.asteroid.destroy();
 
+      // Show success screen
+      this.showSuccessScreen();
+
       // Reset ball velocity
       this.ballVelocity.set(0, -300);
     }
@@ -139,5 +167,23 @@ export class Game extends Scene {
     if ((this.ball.y > this.sys.game.config.height) as number) {
       this.scene.start("GameOver");
     }
+  }
+
+  showSuccessScreen() {
+    this.asteroidDestroyed = true;
+    this.successText.visible = true;
+    
+    // Optional: Add animation to make it more appealing
+    this.tweens.add({
+      targets: this.successText,
+      scale: { from: 0.5, to: 1 },
+      duration: 500,
+      ease: 'Bounce.Out'
+    });
+    
+    // Go to GameOver scene after a delay
+    this.time.delayedCall(3000, () => {
+      this.scene.start("GameOver");
+    });
   }
 }
