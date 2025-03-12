@@ -10,7 +10,11 @@ This template has been updated for:
 - [Vite 5.3.1](https://github.com/vitejs/vite)
 - [TypeScript 5.4.5](https://github.com/microsoft/TypeScript)
 
-![screenshot](screenshot.png)
+![image](https://github.com/user-attachments/assets/2cc35585-0d50-4042-bc9c-b35fae4eaa09)
+
+![image](https://github.com/user-attachments/assets/28d9a44c-84ac-4bcc-b9e7-160e82ab1c44)
+
+
 
 ## Requirements
 
