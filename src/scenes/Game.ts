@@ -35,7 +35,7 @@ export class Game extends Scene {
 
     this.ball = this.add.sprite(this.spaceship.x, this.spaceship.y - 50, "ball"); // Add ball on top of spaceship
     this.ball.setScale(0.5); // Adjust the size of the ball
-    this.ballVelocity = new Phaser.Math.Vector2(0, -200); // Initialize ball velocity to move up
+    this.ballVelocity = new Phaser.Math.Vector2(0, -300); // Increase ball velocity to move up faster
 
     this.input.once("pointerdown", () => {
       this.scene.start("GameOver");
@@ -69,6 +69,8 @@ export class Game extends Scene {
 
     // Bounce the ball against the spaceship
     if (this.ball.y > this.spaceship.y - 50 && this.ball.y < this.spaceship.y && this.ball.x > this.spaceship.x - this.spaceship.displayWidth / 2 && this.ball.x < this.spaceship.x + this.spaceship.displayWidth / 2) {
+      const relativeHitPosition = (this.ball.x - this.spaceship.x) / (this.spaceship.displayWidth / 2);
+      this.ballVelocity.x = relativeHitPosition * 200; // Adjust the horizontal velocity based on hit position
       this.ballVelocity.y = -Math.abs(this.ballVelocity.y); // Ensure the ball bounces upwards
     }
 
