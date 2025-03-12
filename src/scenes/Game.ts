@@ -22,7 +22,7 @@ export class Game extends Scene {
 
   create() {
     this.camera = this.cameras.main;
-    this.camera.setBackgroundColor(0x00ff00);
+    this.camera.setBackgroundColor(0x000000); // Change background color to black
 
     this.background = this.add.image(0, 0, "space-background").setOrigin(0, 0);
     this.background.displayWidth = this.sys.game.config.width as number;
@@ -56,12 +56,6 @@ export class Game extends Scene {
       this.spaceship.x = this.sys.game.config.width as number;
     }
 
-    // Move the ball in a straight line upwards when space is pressed
-    if (Phaser.Input.Keyboard.JustDown(this.cursors.space)) {
-      const angle = Phaser.Math.Between(-45, 45); // Randomize horizontal direction
-      this.ballVelocity.setToPolar(Phaser.Math.DegToRad(angle - 90), 200); // Set velocity with random horizontal direction but upwards
-    }
-
     this.ball.x += this.ballVelocity.x * this.game.loop.delta / 1000;
     this.ball.y += this.ballVelocity.y * this.game.loop.delta / 1000;
 
@@ -75,7 +69,7 @@ export class Game extends Scene {
 
     // Bounce the ball against the spaceship
     if (this.ball.y > this.spaceship.y - 50 && this.ball.y < this.spaceship.y && this.ball.x > this.spaceship.x - this.spaceship.displayWidth / 2 && this.ball.x < this.spaceship.x + this.spaceship.displayWidth / 2) {
-      this.ballVelocity.y *= -1;
+      this.ballVelocity.y = -Math.abs(this.ballVelocity.y); // Ensure the ball bounces upwards
     }
 
     // End the game if the ball touches the bottom of the window
