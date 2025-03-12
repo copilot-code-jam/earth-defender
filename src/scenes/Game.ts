@@ -14,14 +14,31 @@ export class Game extends Scene {
 
   spaceship: Phaser.GameObjects.Sprite;
   cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+  asteroid: Phaser.GameObjects.Sprite;
 
   preload() {
+    this.load.image("asteroid", "assets/asteroid.png");
     this.load.image("spaceship", "assets/spaceship.png");
     this.load.image("ball", "assets/ball.png"); // Load the ball image
   }
 
   create() {
     this.camera = this.cameras.main;
+
+    const bgTexture = this.textures.get("space-background").getSourceImage();
+    const bgWidth = bgTexture.width;
+    const bgHeight = bgTexture.height;
+
+    for (let x = 0; (x < this.sys.game.config.width) as number; x += bgWidth) {
+      for (
+        let y = 0;
+        (y < this.sys.game.config.height) as number;
+        y += bgHeight
+      ) {
+        this.add.image(x, y, "space-background").setOrigin(0, 0);
+      }
+    }
+
     this.camera.setBackgroundColor(0x000000); // Change background color to black
 
     this.background = this.add.image(0, 0, "space-background").setOrigin(0, 0);
@@ -33,7 +50,19 @@ export class Game extends Scene {
     this.spaceship.setScale(4, 1); // Increase the width of the spaceship
     this.cursors = this.input.keyboard.createCursorKeys();
 
-    this.ball = this.add.sprite(this.spaceship.x, this.spaceship.y - 50, "ball"); // Add ball on top of spaceship
+    const asteroidX = Phaser.Math.Between(
+      0,
+      this.sys.game.config.width as number
+    );
+    const asteroidY = 50;
+    this.asteroid = this.add.sprite(asteroidX, asteroidY, "asteroid");
+    this.asteroid.setScale(5); // Adjust the size of the asteroid
+
+    this.ball = this.add.sprite(
+      this.spaceship.x,
+      this.spaceship.y - 50,
+      "ball"
+    ); // Add ball on top of spaceship
     this.ball.setScale(0.5); // Adjust the size of the ball
     this.ballVelocity = new Phaser.Math.Vector2(0, -300); // Increase ball velocity to move up faster
 
@@ -52,15 +81,18 @@ export class Game extends Scene {
     // Prevent the spaceship from leaving the window
     if (this.spaceship.x < 0) {
       this.spaceship.x = 0;
-    } else if (this.spaceship.x > this.sys.game.config.width as number) {
+    } else if ((this.spaceship.x > this.sys.game.config.width) as number) {
       this.spaceship.x = this.sys.game.config.width as number;
     }
 
-    this.ball.x += this.ballVelocity.x * this.game.loop.delta / 1000;
-    this.ball.y += this.ballVelocity.y * this.game.loop.delta / 1000;
+    this.ball.x += (this.ballVelocity.x * this.game.loop.delta) / 1000;
+    this.ball.y += (this.ballVelocity.y * this.game.loop.delta) / 1000;
 
     // Bounce the ball against the window frame
-    if (this.ball.x < 0 || this.ball.x > this.sys.game.config.width as number) {
+    if (
+      this.ball.x < 0 ||
+      ((this.ball.x > this.sys.game.config.width) as number)
+    ) {
       this.ballVelocity.x *= -1;
     }
     if (this.ball.y < 0) {
@@ -68,14 +100,42 @@ export class Game extends Scene {
     }
 
     // Bounce the ball against the spaceship
-    if (this.ball.y > this.spaceship.y - 50 && this.ball.y < this.spaceship.y && this.ball.x > this.spaceship.x - this.spaceship.displayWidth / 2 && this.ball.x < this.spaceship.x + this.spaceship.displayWidth / 2) {
-      const relativeHitPosition = (this.ball.x - this.spaceship.x) / (this.spaceship.displayWidth / 2);
+    if (
+      this.ball.y > this.spaceship.y - 50 &&
+      this.ball.y < this.spaceship.y &&
+      this.ball.x > this.spaceship.x - this.spaceship.displayWidth / 2 &&
+      this.ball.x < this.spaceship.x + this.spaceship.displayWidth / 2
+    ) {
+      const relativeHitPosition =
+        (this.ball.x - this.spaceship.x) / (this.spaceship.displayWidth / 2);
       this.ballVelocity.x = relativeHitPosition * 200; // Adjust the horizontal velocity based on hit position
       this.ballVelocity.y = -Math.abs(this.ballVelocity.y); // Ensure the ball bounces upwards
     }
 
+    // Check for collision between ball and asteroid
+    if (
+      this.ball.x > this.asteroid.x - this.asteroid.displayWidth / 2 &&
+      this.ball.x < this.asteroid.x + this.asteroid.displayWidth / 2 &&
+      this.ball.y > this.asteroid.y - this.asteroid.displayHeight / 2 &&
+      this.ball.y < this.asteroid.y + this.asteroid.displayHeight / 2
+    ) {
+      // Create explosion effect
+      const explosion = this.add.sprite(
+        this.asteroid.x,
+        this.asteroid.y,
+        "explosion"
+      );
+      explosion.play("explode"); // Assuming you have an animation called "explode"
+
+      // Remove the asteroid
+      this.asteroid.destroy();
+
+      // Reset ball velocity
+      this.ballVelocity.set(0, -300);
+    }
+
     // End the game if the ball touches the bottom of the window
-    if (this.ball.y > this.sys.game.config.height as number) {
+    if ((this.ball.y > this.sys.game.config.height) as number) {
       this.scene.start("GameOver");
     }
   }
