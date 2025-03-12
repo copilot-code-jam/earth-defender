@@ -19,7 +19,7 @@ export class Game extends Scene {
   preload() {
     this.load.image("asteroid", "assets/asteroid.png");
     this.load.image("spaceship", "assets/body_01.png");
-    this.load.image("ball", "assets/ball.png"); // Load the ball image
+    this.load.image("ball", "assets/plasma_ball.png"); // Load the ball image
   }
 
   create() {
@@ -63,7 +63,7 @@ export class Game extends Scene {
       this.spaceship.y - 50,
       "ball"
     ); // Add ball on top of spaceship
-    this.ball.setScale(0.5); // Adjust the size of the ball
+    this.ball.setScale(0.05); // Adjust the size of the ball
     this.ballVelocity = new Phaser.Math.Vector2(0, -300); // Increase ball velocity to move up faster
 
     this.input.once("pointerdown", () => {
